@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/pictures">
+        <file>sample_portrait_church_szuarin.jpeg</file>
+        <file>sample_landscape_castle_szuarin.jpeg</file>
+    </qresource>
+</RCC>
