@@ -1,0 +1,4 @@
+is currently done by compiling and testing the samples.
+
+CppUnit or such will come.
+I prefer the testing which is avail in QtCreator or CodeLite
