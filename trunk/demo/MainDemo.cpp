@@ -37,19 +37,24 @@
 #include <QPicture>
 
 
+
+
+
+
+
 MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   : QMainWindow(parent)
   , m_Applic(Applic)
   , m_CentralWidget( parent )
-  , m_MyPictureLandscape( new QLabel )
-  , m_MyPicturePortrait( new QLabel )
+  , m_ImageFileNameLeft( ":/pictures/sample_landscape_castle_szuarin.jpeg" )
+  , m_ImageFileNameRight(":/pictures/sample_portrait_church_szuarin.jpeg" )
+  , m_MyPictureLandscape( QImage(m_ImageFileNameLeft ), 640, 480, parent )
+  , m_MyPicturePortrait(  QImage(m_ImageFileNameRight), 480, 640, parent )
 {
-
   /* Niklots Schloss */
   QVBoxLayout* LeftPageLSLayout = new QVBoxLayout();
   {
   m_MyPictureLandscape.setScaledContents(true);
-  m_MyPictureLandscape.setPixmap( QPixmap( ":/pictures/sample_landscape_castle_szuarin.jpeg" ).scaled(640,480,Qt::KeepAspectRatio, Qt::SmoothTransformation) );
   m_MyPictureLandscape.setAlignment( Qt::AlignCenter | Qt::AlignHCenter );
   m_MyPictureLandscape.setMinimumSize(320,200);
   m_MyPictureLandscape.setMaximumSize(1920,1080);
@@ -72,7 +77,6 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   QVBoxLayout* RightPagePTLayout= new QVBoxLayout();
   {
   m_MyPicturePortrait.setScaledContents(true);
-  m_MyPicturePortrait.setPixmap(  QPixmap( ":/pictures/sample_portrait_church_szuarin.jpeg"  ).scaled(480,640,Qt::KeepAspectRatio, Qt::SmoothTransformation) );
   m_MyPicturePortrait.setAlignment( Qt::AlignCenter | Qt::AlignHCenter );
   m_MyPicturePortrait.setMinimumSize(200,320);
   m_MyPicturePortrait.setMaximumSize(1080,1920);
@@ -137,19 +141,128 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
 
 
 MainDemo::~MainDemo()
-{
-
+{ // Nothing to destroy, it's all QObject managed
 }
+
 
 void MainDemo::on_ready()
 {
-  double PercentOfScreen = 90.0  / 100.0;
+  double PercentOfScreen = 80.0  / 100.0;
   QDesktopWidget dw;
   QSize newSize( static_cast<int>( dw.availableGeometry(this).size().width() * PercentOfScreen )
                , static_cast<int>( dw.availableGeometry(this).size().height()* PercentOfScreen ) );
   this->resize( newSize );
   this->move( static_cast<int>( (dw.availableGeometry(this).size().width() - this->width() )/2.0 )
             , static_cast<int>( (dw.availableGeometry(this).size().height()- this->height())/2.0 ) );
-  qDebug() << __PRETTY_FUNCTION__ << "Done aligning App to middle " << PercentOfScreen * 100 << "% of Screen";
-
+  qDebug() << __PRETTY_FUNCTION__ << "Done aligning app to screen middle " << PercentOfScreen * 100 << "% of Screen";
 }
+
+
+
+
+
+
+
+
+
+
+LabelWithImage::LabelWithImage(QWidget* parent, Qt::WindowFlags f)
+  : QLabel(parent,f)
+  , m_MouseButtonTime()
+  , m_MagGlass( this )
+{
+}
+
+
+LabelWithImage::LabelWithImage(const QString& text, QWidget* parent, Qt::WindowFlags f)
+  : QLabel(text, parent,f)
+  , m_MouseButtonTime()
+  , m_MagGlass( this )
+{
+}
+
+
+LabelWithImage::LabelWithImage(const QImage& image, int width, int height, QWidget* parent, Qt::WindowFlags f)
+  : QLabel(parent,f)
+  , m_MouseButtonTime()
+  , m_MagGlass( this )
+{
+  this->setImage( image, width, height );
+}
+
+
+void LabelWithImage::setImage(const QImage& image,
+                              int width, int height,
+                              Qt::AspectRatioMode aspectMode,
+                              Qt::TransformationMode mode )
+{
+  this->m_Image = image;
+  this->setPixmap( QPixmap::fromImage( m_Image ).scaled(width,height,aspectMode,mode) );
+}
+
+
+void LabelWithImage::resizeEvent(QResizeEvent* event)
+{
+    if( m_MagGlass.isActive() )
+        m_MagGlass.setup( m_Image, event->size(), this->size() );
+}
+
+
+void LabelWithImage::mousePressEvent(QMouseEvent* event)
+{
+  Qt::MouseButton Button = event->button();
+  Qt::MouseButtons Buttons = event->buttons();
+  QPoint MouseXY = event->pos();
+
+  int TimeBetween = m_MouseButtonTime.restart();
+  bool DoubleClicked = (TimeBetween<500/*ms*/) ? true:false;
+
+  qDebug() << __PRETTY_FUNCTION__ << "Button" << Button << "/" << Buttons
+                                  << "at" << MouseXY
+                                  << ((DoubleClicked)? "double":"single") << "clicked within"
+                                  << TimeBetween << "ms";
+
+  if( Button == Qt::RightButton )
+  {
+      m_MagGlass.activate();
+      m_MagGlass.setup( m_Image, m_Image.size(), this->size(), MouseXY );
+      m_MagGlass.Show( event->pos() );
+
+      if( DoubleClicked )
+         m_MagGlass.resetZoom();
+      return;
+  }
+}
+
+
+void LabelWithImage::mouseMoveEvent(QMouseEvent* event)
+{
+  // event->pos() reports the position of the mouse cursor, relative to this widget.
+  // If you want to show a tooltip immediately, while the mouse is moving (e.g., to get the mouse coordinates with QMouseEvent::pos() and show them as a tooltip),
+  // you must first enable mouse tracking as described above. Then, to ensure that the tooltip is updated immediately, you must call QToolTip::showText()
+  // instead of setToolTip() in your implementation of mouseMoveEvent().
+  //QPoint Where = event->pos();
+  //Qt::MouseButton Button = event->button();
+  // qDebug() << __PRETTY_FUNCTION__ << "(" << objectName() << ") Mouse with Button" << Button << "at" << Where << "moved";
+  if( m_MagGlass.isActive() )
+  {
+      m_MagGlass.Move( event->pos() );
+  }
+}
+
+
+void LabelWithImage::mouseReleaseEvent(QMouseEvent* event)
+{
+    if( event->button() == Qt::RightButton )
+    {
+        m_MagGlass.deactivate();
+        m_MagGlass.Hide();
+    }
+}
+
+
+void LabelWithImage::wheelEvent(QWheelEvent* event)
+{
+    m_MagGlass.reportZoom( event->delta() );
+}
+

@@ -26,10 +26,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        MainDemo.cpp
+        MainDemo.cpp \
+    ../src/MagnificationGlass.cpp
 
 HEADERS += \
-        MainDemo.h
+        MainDemo.h \
+    ../src/MagnificationGlass.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
