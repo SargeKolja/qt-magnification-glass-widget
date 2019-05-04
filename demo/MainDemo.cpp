@@ -169,6 +169,8 @@ void MainDemo::on_ready()
 LabelWithImage::LabelWithImage(QWidget* parent, Qt::WindowFlags f)
   : QLabel(parent,f)
   , m_MouseButtonTime()
+  , m_pixmapWidth(0)
+  , m_pixmapHeight(0)
   , m_MagGlass( this )
 {
 }
@@ -177,6 +179,8 @@ LabelWithImage::LabelWithImage(QWidget* parent, Qt::WindowFlags f)
 LabelWithImage::LabelWithImage(const QString& text, QWidget* parent, Qt::WindowFlags f)
   : QLabel(text, parent,f)
   , m_MouseButtonTime()
+  , m_pixmapWidth(0)
+  , m_pixmapHeight(0)
   , m_MagGlass( this )
 {
 }
@@ -185,6 +189,8 @@ LabelWithImage::LabelWithImage(const QString& text, QWidget* parent, Qt::WindowF
 LabelWithImage::LabelWithImage(const QImage& image, int width, int height, QWidget* parent, Qt::WindowFlags f)
   : QLabel(parent,f)
   , m_MouseButtonTime()
+  , m_pixmapWidth(0)
+  , m_pixmapHeight(0)
   , m_MagGlass( this )
 {
   this->setImage( image, width, height );
@@ -197,7 +203,23 @@ void LabelWithImage::setImage(const QImage& image,
                               Qt::TransformationMode mode )
 {
   this->m_Image = image;
-  this->setPixmap( QPixmap::fromImage( m_Image ).scaled(width,height,aspectMode,mode) );
+  this->setPixmap_internal( QPixmap::fromImage( m_Image ).scaled(width,height,aspectMode,mode) );
+}
+
+void LabelWithImage::setPixmap(const QPixmap& pixmap)
+{
+  this->m_Image = pixmap.toImage();
+  this->setPixmap_internal( pixmap );
+}
+
+
+void LabelWithImage::setPixmap_internal(const QPixmap& pixmap)
+{
+    m_pixmapWidth = pixmap.width();
+    m_pixmapHeight = pixmap.height();
+
+    updateMargins_internal();
+    QLabel::setPixmap(pixmap);
 }
 
 
@@ -205,6 +227,9 @@ void LabelWithImage::resizeEvent(QResizeEvent* event)
 {
     if( m_MagGlass.isActive() )
         m_MagGlass.setup( m_Image, event->size(), this->size() );
+
+    this->updateMargins_internal();
+    QLabel::resizeEvent(event);
 }
 
 
@@ -266,3 +291,28 @@ void LabelWithImage::wheelEvent(QWheelEvent* event)
     m_MagGlass.reportZoom( event->delta() );
 }
 
+
+void LabelWithImage::updateMargins_internal(void)
+{
+    if( (m_pixmapWidth>0) && (m_pixmapHeight>0) )
+    {
+        int current_w = this->width();
+        int current_h = this->height();
+
+        if( (current_w>0) && (current_h>0) )
+        {
+            if( (current_w * m_pixmapHeight) > (current_h * m_pixmapWidth) )
+            {
+                int mix = (current_w - (m_pixmapWidth * current_h / m_pixmapHeight)) / 2;
+                setContentsMargins( mix, 0, mix, 0 );
+            }
+            else
+            {
+                int miy = (current_h - (m_pixmapHeight * current_w / m_pixmapWidth)) / 2;
+                setContentsMargins( 0, miy, 0, miy );
+            }
+        } // if (current_w > 0 && current_h > 0)
+    } // if( m_pixmapWidth > 0 && m_pixmapHeight <= 0 )
+
+
+}

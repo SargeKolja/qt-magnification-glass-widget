@@ -54,6 +54,7 @@ public:
   virtual ~LabelWithImage() {}
 
   void setImage( const QImage& image, int width, int height, Qt::AspectRatioMode aspectMode = Qt::KeepAspectRatio, Qt::TransformationMode mode = Qt::SmoothTransformation );
+  void setPixmap(const QPixmap& pixmap );
 
 protected:
   void resizeEvent(       QResizeEvent *event );
@@ -63,8 +64,14 @@ protected:
   void wheelEvent(        QWheelEvent  *event );
 
 private:
+  void setPixmap_internal( const QPixmap& pixmap );
+  void updateMargins_internal(void);
+
+private:
   QTime               m_MouseButtonTime;
   QImage              m_Image;
+  int                 m_pixmapWidth;
+  int                 m_pixmapHeight;
   /* ------ This is what the demo is about: ------*/
   MagnificationGlass  m_MagGlass;
 };
