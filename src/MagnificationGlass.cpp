@@ -35,7 +35,6 @@
 #include <QTransform>
 #include <QtCore/qmath.h>
 
-#include "code_annotation.h"
 
 #define HEXADDR(x)                                      hex << static_cast<const void*>(x)    << dec
 #define OBJIDENT(x)  ((x)?x->objectName():"") << "@" << hex << static_cast<const void*>(x)    << dec
@@ -59,7 +58,7 @@ MagnificationGlass::MagnificationGlass( QWidget *parent )
   , mLabel( parent )
   , mIsActive(false)
   {
-      TODO("make mMagnification a config param")
+      // Todo: make mMagnification a QSettings parameter
       mMagnification = 5.0;
       mBaseMagnification = mMagnification;
   }
@@ -84,7 +83,7 @@ void MagnificationGlass::setup( const QImage bigpicture, const QSize& OriginalSi
     mScaling = MagnificationGlass::getSquareScale( mOriginalSize, mViewPortSize );
     // qDebug() << __PRETTY_FUNCTION__ << __LINE__ << "ViewPort:" << mViewPortSize << ", Magnification=" << mScaling;
 
-    TODO("make 1/9.0 a config param")
+    // Todo: make 1/9.0 a QSettings parameter
     double GlassSizeRelativeToViewport = 1/9.0;
     mGlassSize = MagnificationGlass::ScaleBySqare( mViewPortSize, GlassSizeRelativeToViewport );
 
