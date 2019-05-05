@@ -35,7 +35,7 @@
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QPicture>
-
+#include <QPainter>
 
 
 
@@ -63,7 +63,8 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   LeftPageLSLayout->addWidget( new QLabel("<hr>", &m_CentralWidget ) );
   LeftPageLSLayout->addSpacing(1);
   /* ------------------ */
-  LeftPageLSLayout->addWidget( &m_MyPictureLandscape, 40, Qt::AlignCenter | Qt::AlignHCenter );
+  LeftPageLSLayout->addStretch(1);
+  LeftPageLSLayout->addWidget( &m_MyPictureLandscape, 98, Qt::AlignCenter | Qt::AlignHCenter );
   LeftPageLSLayout->addStretch(1);
   /* ------------------ */
   LeftPageLSLayout->addSpacing(1);
@@ -76,16 +77,20 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   /* Dom */
   QVBoxLayout* RightPagePTLayout= new QVBoxLayout();
   {
-  m_MyPicturePortrait.setScaledContents(true);
-  m_MyPicturePortrait.setAlignment( Qt::AlignCenter | Qt::AlignHCenter );
+  // not for Widget: m_MyPicturePortrait.setScaledContents(true);
+  // not for Widget: m_MyPicturePortrait.setAlignment( Qt::AlignCenter | Qt::AlignHCenter );
   m_MyPicturePortrait.setMinimumSize(200,320);
   m_MyPicturePortrait.setMaximumSize(1080,1920);
+  m_MyPicturePortrait.setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
+  //qDebug() << __PRETTY_FUNCTION__ << "pic.sizeHint:" << m_MyPicturePortrait.sizeHint() << "lay.sizeHint:" << RightPagePTLayout->sizeHint();
   /* ------------------ */
   RightPagePTLayout->addSpacing(1);
   RightPagePTLayout->addWidget( new QLabel("<hr>", &m_CentralWidget ) );
+  RightPagePTLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
   RightPagePTLayout->addSpacing(1);
   /* ------------------ */
-  RightPagePTLayout->addWidget( &m_MyPicturePortrait, 40, Qt::AlignCenter | Qt::AlignHCenter );
+  RightPagePTLayout->addStretch(1);
+  RightPagePTLayout->addWidget( &m_MyPicturePortrait, 98, Qt::AlignCenter | Qt::AlignHCenter );
   RightPagePTLayout->addStretch(1);
   /* ------------------ */
   RightPagePTLayout->addSpacing(1);
@@ -98,30 +103,32 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   QHBoxLayout* TwoPicLayout= new QHBoxLayout(&m_CentralWidget);
   {
   /* ------ */
-  QFrame* vLine1 = new QFrame( &m_CentralWidget );
-  vLine1->setFrameShape(QFrame::VLine);
-  vLine1->setFrameShadow(QFrame::Sunken);
-  TwoPicLayout->addSpacing(1);
-  TwoPicLayout->addWidget( vLine1 );
-  TwoPicLayout->addSpacing(1);
-  /* ------ */
-  TwoPicLayout->addLayout( LeftPageLSLayout, 40 );
-  /* ------ */
-  QFrame* vLine2 = new QFrame( &m_CentralWidget );
-  vLine2->setFrameShape(QFrame::VLine);
-  vLine2->setFrameShadow(QFrame::Sunken);
-  TwoPicLayout->addSpacing(1);
-  TwoPicLayout->addWidget( vLine2 );
-  TwoPicLayout->addSpacing(1);
-  /* ------ */
-  TwoPicLayout->addLayout( RightPagePTLayout, 40 );
-  /* ------ */
-  QFrame* vLine3 = new QFrame( &m_CentralWidget );
-  vLine3->setFrameShape(QFrame::VLine);
-  vLine3->setFrameShadow(QFrame::Sunken);
-  TwoPicLayout->addSpacing(1);
-  TwoPicLayout->addWidget( vLine3 );
-  TwoPicLayout->addSpacing(1);
+  {QFrame* vLine1 = new QFrame( &m_CentralWidget );
+   vLine1->setFrameShape(QFrame::VLine);
+   vLine1->setFrameShadow(QFrame::Sunken);
+   TwoPicLayout->addSpacing(1);
+   TwoPicLayout->addWidget( vLine1 );
+   TwoPicLayout->addSpacing(1);}
+  /* ------ PICTURE LEFT ----------- */
+  TwoPicLayout->addLayout( LeftPageLSLayout, 47 );
+  /* ------------------------------- */
+  {QFrame* vLine2 = new QFrame( &m_CentralWidget );
+   vLine2->setFrameShape(QFrame::VLine);
+   vLine2->setFrameShadow(QFrame::Sunken);
+   TwoPicLayout->addStretch(1);
+   TwoPicLayout->addSpacing(1);
+   TwoPicLayout->addWidget( vLine2 );
+   TwoPicLayout->addSpacing(1);
+   TwoPicLayout->addStretch(1);}
+  /* ------ PICTURE RIGHT ----------- */
+  TwoPicLayout->addLayout( RightPagePTLayout, 47 );
+  /* ------------------------------- */
+  {QFrame* vLine4 = new QFrame( &m_CentralWidget );
+   vLine4->setFrameShape(QFrame::VLine);
+   vLine4->setFrameShadow(QFrame::Sunken);
+   TwoPicLayout->addSpacing(1);
+   TwoPicLayout->addWidget( vLine4 );
+   TwoPicLayout->addSpacing(1);}
   /* ------ */
   }
 
@@ -129,7 +136,7 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   // --- define main windows widget as central one:
   setCentralWidget( &m_CentralWidget );
 
-  double PercentOfScreen = 75.0  / 100.0;
+  double PercentOfScreen = 70.0  / 100.0;
   QDesktopWidget dw;
   QSize newSize( static_cast<int>( dw.availableGeometry(this).size().width() * PercentOfScreen )
                , static_cast<int>( dw.availableGeometry(this).size().height()* PercentOfScreen ) );
@@ -165,6 +172,8 @@ void MainDemo::on_ready()
 
 
 
+// ==============================================================================
+// ==============================================================================
 
 LabelWithImage::LabelWithImage(QWidget* parent, Qt::WindowFlags f)
   : QLabel(parent,f)
@@ -225,6 +234,7 @@ void LabelWithImage::setPixmap_internal(const QPixmap& pixmap)
 
 void LabelWithImage::resizeEvent(QResizeEvent* event)
 {
+    // qDebug() << __PRETTY_FUNCTION__ << "ResizeEvent=" << event;
     if( m_MagGlass.isActive() )
         m_MagGlass.setup( m_Image, event->size(), this->size() );
 
@@ -236,17 +246,13 @@ void LabelWithImage::resizeEvent(QResizeEvent* event)
 void LabelWithImage::mousePressEvent(QMouseEvent* event)
 {
   Qt::MouseButton Button = event->button();
-  Qt::MouseButtons Buttons = event->buttons();
+//Qt::MouseButtons Buttons = event->buttons();
   QPoint MouseXY = event->pos();
 
   int TimeBetween = m_MouseButtonTime.restart();
   bool DoubleClicked = (TimeBetween<500/*ms*/) ? true:false;
 
-  qDebug() << __PRETTY_FUNCTION__ << "Button" << Button << "/" << Buttons
-                                  << "at" << MouseXY
-                                  << ((DoubleClicked)? "double":"single") << "clicked within"
-                                  << TimeBetween << "ms";
-
+  // qDebug() << __PRETTY_FUNCTION__ << "Button" << Button << "/" << Buttons << "at" << MouseXY << ((DoubleClicked)? "double":"single") << "clicked within" << TimeBetween << "ms";
   if( Button == Qt::RightButton )
   {
       m_MagGlass.activate();
@@ -316,3 +322,148 @@ void LabelWithImage::updateMargins_internal(void)
 
 
 }
+
+// ==============================================================================
+// ==============================================================================
+
+WidgetWithImage::WidgetWithImage(QWidget* parent, Qt::WindowFlags f)
+  : QWidget( parent, f )
+  , m_MouseButtonTime()
+  , m_pixmapWidth(0)
+  , m_pixmapHeight(0)
+  , m_aspectRatioMode(Qt::KeepAspectRatio)
+  , m_transformationMode(Qt::SmoothTransformation)
+  , m_MagGlass( this )
+{
+}
+
+
+WidgetWithImage::WidgetWithImage(const QImage& image, int width, int height, QWidget* parent, Qt::WindowFlags f)
+  : QWidget( parent,f )
+  , m_MouseButtonTime()
+  , m_pixmapWidth(0)
+  , m_pixmapHeight(0)
+  , m_aspectRatioMode(Qt::KeepAspectRatio)
+  , m_transformationMode(Qt::SmoothTransformation)
+  , m_MagGlass( this )
+{
+    this->setImage( image, width, height );
+}
+
+
+void WidgetWithImage::setImage(const QImage& image, int width, int height,
+                               Qt::AspectRatioMode aspectMode, Qt::TransformationMode mode)
+{
+    // qDebug() << __PRETTY_FUNCTION__ << "set Image=" << image << "h=" << height << "w=" << width ;
+    setImage_internal( image, width, height, aspectMode, mode );
+}
+
+
+void WidgetWithImage::setPixmap(const QPixmap& pixmap)
+{
+    //qDebug() << __PRETTY_FUNCTION__ << "set Pixmap=" << pixmap;
+    setImage_internal( pixmap.toImage(), pixmap.width(), pixmap.height() );
+}
+
+
+void WidgetWithImage::setImage_internal( const QImage& image, int width, int height,
+                                         Qt::AspectRatioMode aspectMode, Qt::TransformationMode mode )
+{
+    m_Image = image;
+    m_aspectRatioMode = aspectMode;
+    m_transformationMode = mode;
+    m_pixmapWidth = width;
+    m_pixmapHeight = height;
+
+    updateMargins_internal();
+}
+
+
+QSize	WidgetWithImage::sizeHint( void ) const
+{
+    QSize bestSize( m_pixmapWidth, m_pixmapHeight );
+    return bestSize;
+}
+
+void WidgetWithImage::paintEvent( QPaintEvent *event )
+{
+    QSize WidgetSize( this->size() );
+    QSize PixmapSize( m_pixmapWidth, m_pixmapHeight );
+    // qDebug() << __PRETTY_FUNCTION__ << "paintEvent=" << event << "WidgetSize" << WidgetSize << "newSize" << PixmapSize << "sizeHint:" << sizeHint();
+    QPainter wPainter;
+    //QImage image( m_Image.scaled( PixmapSize, m_aspectRatioMode, m_transformationMode ) );
+    QImage image( m_Image.scaled( WidgetSize, m_aspectRatioMode, m_transformationMode ) );
+
+    /* painting of the picture inside the widget at center */
+    wPainter.begin( this );
+    int StartX = ( width() - image.width() ) / 2;
+    int StartY = ( height() - image.height() ) / 2;
+    wPainter.drawImage( StartX, StartY, image ); // a scaled down version, if m_pixmapWidth/Heigt > this->size(), otherwise scaled up
+
+    wPainter.end();
+    //QWidget::paintEvent(event);
+    event->accept();
+}
+
+
+void WidgetWithImage::resizeEvent(QResizeEvent* event)
+{
+    //qDebug() << __PRETTY_FUNCTION__ << "ResizeEvent=" << event << "sizeHint:" << sizeHint();
+    // m_pixmapWidth, m_pixmapHeight
+
+    if( m_MagGlass.isActive() )
+        m_MagGlass.setup( m_Image, event->size(), this->size() );
+}
+
+
+void WidgetWithImage::mousePressEvent(QMouseEvent* event)
+{
+  Qt::MouseButton Button = event->button();
+//Qt::MouseButtons Buttons = event->buttons();
+  QPoint MouseXY = event->pos();
+
+  int TimeBetween = m_MouseButtonTime.restart();
+  bool DoubleClicked = (TimeBetween<500/*ms*/) ? true:false;
+
+  // qDebug() << __PRETTY_FUNCTION__ << "Button" << Button << "/" << Buttons << "at" << MouseXY << ((DoubleClicked)? "double":"single") << "clicked within" << TimeBetween << "ms";
+  if( Button == Qt::RightButton )
+  {
+      m_MagGlass.activate();
+      m_MagGlass.setup( m_Image, m_Image.size(), this->size(), MouseXY );
+      m_MagGlass.Show( event->pos() );
+
+      if( DoubleClicked )
+         m_MagGlass.resetZoom();
+      return;
+  }
+}
+
+
+void WidgetWithImage::mouseMoveEvent(QMouseEvent* event)
+{
+    if( m_MagGlass.isActive() )
+    {   m_MagGlass.Move( event->pos() );
+    }
+}
+
+
+void WidgetWithImage::mouseReleaseEvent(QMouseEvent* event)
+{
+    if( event->button() == Qt::RightButton )
+    {
+        m_MagGlass.deactivate();
+        m_MagGlass.Hide();
+    }
+}
+
+
+void WidgetWithImage::wheelEvent(QWheelEvent* event)
+{
+    m_MagGlass.reportZoom( event->delta() );
+}
+
+
+void WidgetWithImage::updateMargins_internal()
+{
+}
+
