@@ -62,11 +62,14 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   LeftPageLSLayout->addSpacing(1);
   LeftPageLSLayout->addWidget( new QLabel("<hr>", &m_CentralWidget ) );
   LeftPageLSLayout->addSpacing(1);
+  LeftPageLSLayout->addWidget( new QLabel("<b>This side is a QLabel-with-image</b>", &m_CentralWidget ), Qt::AlignHCenter );
+  LeftPageLSLayout->addWidget( new QLabel("Magnification glass: right mouse button", &m_CentralWidget ), Qt::AlignHCenter );
   /* ------------------ */
   LeftPageLSLayout->addStretch(1);
   LeftPageLSLayout->addWidget( &m_MyPictureLandscape, 98, Qt::AlignCenter | Qt::AlignHCenter );
   LeftPageLSLayout->addStretch(1);
   /* ------------------ */
+  LeftPageLSLayout->addWidget( new QLabel("Change position: move the glass while holding right mouse button", &m_CentralWidget ) );
   LeftPageLSLayout->addSpacing(1);
   LeftPageLSLayout->addWidget( new QLabel("<hr>", &m_CentralWidget ) );
   LeftPageLSLayout->addSpacing(1);
@@ -88,11 +91,14 @@ MainDemo::MainDemo(QApplication& Applic, QWidget *parent)
   RightPagePTLayout->addWidget( new QLabel("<hr>", &m_CentralWidget ) );
   RightPagePTLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
   RightPagePTLayout->addSpacing(1);
+  RightPagePTLayout->addWidget( new QLabel("<b>This side is a QWidget with custom paintEvent/sizeHint</b>", &m_CentralWidget ), Qt::AlignHCenter );
+  RightPagePTLayout->addWidget( new QLabel("Zoom further in/out: roll mouse wheel while holding right mouse button", &m_CentralWidget ), Qt::AlignHCenter );
   /* ------------------ */
   RightPagePTLayout->addStretch(1);
   RightPagePTLayout->addWidget( &m_MyPicturePortrait, 98, Qt::AlignCenter | Qt::AlignHCenter );
   RightPagePTLayout->addStretch(1);
   /* ------------------ */
+  RightPagePTLayout->addWidget( new QLabel("Reset zoom: double click right mouse button", &m_CentralWidget ) );
   RightPagePTLayout->addSpacing(1);
   RightPagePTLayout->addWidget( new QLabel("<hr>", &m_CentralWidget ) );
   RightPagePTLayout->addSpacing(1);
