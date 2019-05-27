@@ -1,5 +1,6 @@
 /*
-Copyright 2019 Sergeant Kolja, GERMANY
+Copyright 2019 Modem-Man (this->Universe->Milky_Way->Sol->Earth->GERMANY->Lower_Saxony->Lehrte)
+               and Sergeant Kolja, Schwerin
 
 Redistribution and use in source and binary forms, with or without modification, are 
 permitted provided that the following conditions are met:
