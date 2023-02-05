@@ -4,7 +4,6 @@ a magnification glass Widget for Qt4/5 is a source code you can add to your proj
 The zoomed area sub-window is made around your mouse pointer (pointer is the middle of the sub window). You can move it around which changes the viewed area, you can zoom further in or back out. Can be called or attached to signal/slot (surely also subclassed with less adaptions). Current DEMO code is calling it on right mouse click until you release the button again, zoom is via mouse wheel.
 
 ![Logo](./castle_zuarin_1.webp?raw=true)
-![Picture](./zuarin_cathedral.webp?raw=true)
 
 Features
 C++
